@@ -25,7 +25,7 @@ class Trainer:
         self.char_vocab = vocabulary.get_char_vocab()
 
         self.train_vect = Vectorizer(self.train_max_sentence_len, self.train_max_word_len, self.vocab, self.char_vocab, self.train_words)
-        self.dev_vect = Vectorizer(self.dev_max_sentence_len, self.dev_max_word_len, self.vocab, self.char_vocab, self.dev_words)
+        self.dev_vect = Vectorizer(self.train_max_sentence_len, self.train_max_word_len, self.vocab, self.char_vocab, self.dev_words)
 
         self.poss_vect = LabelEncoderModel(self.train_poss,self.train_max_sentence_len)
         self.chunks_vect = LabelEncoderModel(self.train_chunks,self.train_max_sentence_len)
