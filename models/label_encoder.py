@@ -19,7 +19,7 @@ class LabelEncoderModel:
                 ele = [target_list[sentence_index][index]]
                 converted_vec[sentence_index][index] = self.label_encoder.transform(ele)[0]
         
-        return converted_vec
+        return np.asarray(converted_vec)
     
     def get_emb_weights(self):
         print("----------Creating weights labels----------------")
