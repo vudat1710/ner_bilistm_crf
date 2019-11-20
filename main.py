@@ -1,5 +1,6 @@
 import argparse
 from train import Trainer
+import os
 
 def parse():
     parser = argparse.ArgumentParser(description='Basic LSTM model')
@@ -27,6 +28,8 @@ def run(args):
     print(args)
     print('-------------------------------')
     trainer = Trainer(args)
+    os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+    os.environ["CUDA_VISIBLE_DEVICES"]="3"
     if args.mode == 'train':
         trainer.train()
     elif args.mode == 'test':
