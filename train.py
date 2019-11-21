@@ -60,11 +60,14 @@ class Trainer:
         poss_emb_input = self.poss_vect.onehot_vectorizer(self.train_poss)
         chunks_emb_input = self.chunks_vect.onehot_vectorizer(self.train_chunks)
         labels = self.labels_vect.onehot_vectorizer(self.train_labels)
+        num_classes = len(set(sum(self.train_labels, [])))
+        labels = [to_categorical(i, num_classes=num_classes) for i in labels]
 
         word_emb_input_dev, char_emb_input_dev = self.dev_vect.vectorizer()
         poss_emb_input_dev = self.poss_vect.onehot_vectorizer(self.dev_poss)
         chunks_emb_input_dev = self.chunks_vect.onehot_vectorizer(self.dev_chunks)
         labels_dev = self.labels_vect.onehot_vectorizer(self.dev_labels)
+        labels_dev = [to_categorical(i, num_classes=num_classes) for i in labels_dev]
 
         self.model.fit(
             [char_emb_input, word_emb_input, poss_emb_input, chunks_emb_input],
