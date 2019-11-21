@@ -8,6 +8,7 @@ from models.label_encoder import LabelEncoderModel
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.utils import to_categorical
 import os
+import numpy as np
 
 class Trainer:
     def __init__(self, args):
@@ -71,10 +72,10 @@ class Trainer:
 
         self.model.fit(
             [char_emb_input, word_emb_input, poss_emb_input, chunks_emb_input],
-            labels,
+            np.asarray(labels),
             epochs=self.args.epochs,
             batch_size=self.args.batch_size,
-            validation_data=([char_emb_input_dev, word_emb_input_dev, poss_emb_input_dev, chunks_emb_input_dev], labels_dev),
+            validation_data=([char_emb_input_dev, word_emb_input_dev, poss_emb_input_dev, chunks_emb_input_dev], np.asarray(labels_dev)),
             verbose=1
         )
 

@@ -26,6 +26,6 @@ class ModelTraining:
         training_model = Model(inputs=self.inputs, outputs=out, name="training_model")
         opt = Adam(self.lr)
 
-        training_model.compile(loss='categorical_crossentropy', optimizer=opt)
+        training_model.compile(loss=self.crf.loss_function, optimizer=opt, metrics=[self.crf.accuracy])
 
         return training_model
