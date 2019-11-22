@@ -12,7 +12,7 @@ class ModelTraining:
         self.word_hidden_dim = word_hidden_dim
         self.dropout = dropout
         self.n_classes = n_classes
-        self.crf = CRF(self.n_classes)
+        self.crf = CRF(self.n_classes, sparse_target=False)
         self.lr = lr
 
     def model_build(self):
@@ -20,12 +20,12 @@ class ModelTraining:
 
         lstm_after = model(self.emb_layer)
         lstm_after = Dropout(self.dropout)(lstm_after)
-        # lstm_after = TimeDistributed(Dense(100, activation='relu'))(lstm_after)
+        lstm_after = TimeDistributed(Dense(50, activation='relu'))(lstm_after)
         out = self.crf(lstm_after)
 
         training_model = Model(inputs=self.inputs, outputs=out, name="training_model")
         opt = Adam(self.lr)
 
-        training_model.compile(loss=self.crf.loss_function, optimizer=opt, metrics=[self.crf.accuracy])
+        training_model.compile(loss=self.crf.loss_function, optimizer=opt)
 
         return training_model

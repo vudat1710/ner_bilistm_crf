@@ -1,7 +1,7 @@
 import numpy as np 
 import keras.backend as K
 from keras.utils import to_categorical
-from keras.layers import Input, LSTM, Embedding, Bidirectional, TimeDistributed, Concatenate
+from keras.layers import Input, Dropout, LSTM, Embedding, Bidirectional, TimeDistributed, Concatenate
 
 class EmbeddingLayer:
     def __init__(self, vocab_size: int, char_vocab_size: int, max_word_len: int, pos_len: int, chunk_len: int, word_emb_dimensions=300, char_emb_dimensions=100, char_hidden_dim=100, word_emb_weights=None, char_emb_weights=None, pos_emb_weights=None, chunk_emb_weights=None, word_emb_trainable=False, char_emb_trainable=True, word_mask_zero=True, char_mask_zero=True):
@@ -73,6 +73,7 @@ class EmbeddingLayer:
             else:
                 name = "Embedding_Char_Pre%d" % (i+1)
             char_emb_layer = TimeDistributed(layer=layer, name=name)(char_emb_layer)
-        emb_layer = Concatenate(name="Embedding")([char_emb_layer, word_emb_layer, pos_emb_layer, chunk_emb_layer])
+        emb_layer = Concatenate(axis=-1,name="Embedding")([char_emb_layer, word_emb_layer, pos_emb_layer, chunk_emb_layer])
+        emb_layer = Dropout(0.003)(emb_layer)
 
         return [char_input_layer, word_input_layer, pos_input_layer, chunk_input_layer], emb_layer
