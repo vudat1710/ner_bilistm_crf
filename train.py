@@ -4,6 +4,7 @@ from utils.vocabulary import Vocabulary
 from utils.vectorizer import Vectorizer
 from models.model import ModelTraining
 from models.label_encoder import LabelEncoderModel
+from models.callback import AnSelCB
 
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from keras.utils import to_categorical
@@ -40,6 +41,11 @@ class Trainer:
                     len(set(sum(self.train_poss,[]))), len(set(sum(self.train_chunks,[]))), word_emb_dimensions=self.word_emb_dimensions, 
                     word_emb_weights=self.word_emb_weights, pos_emb_weights=self.pos_emb_weights, chunk_emb_weights=self.chunk_emb_weights).model_build()
 
+        # self.model = ModelTraining(self.args.dropout, self.args.lr, len(set(sum(self.train_labels, []))), len(self.vocab), len(self.char_vocab), self.train_max_word_len, 
+        #             len(set(sum(self.train_poss,[]))), len(set(sum(self.train_chunks,[]))), word_emb_dimensions=self.word_emb_dimensions, 
+        #             word_emb_weights=self.word_emb_weights).model_build()
+                    
+
     
     def helper(self):
         _l = []
@@ -70,12 +76,19 @@ class Trainer:
         labels_dev = self.labels_vect.onehot_vectorizer(self.dev_labels)
         labels_dev = [to_categorical(i, num_classes=num_classes) for i in labels_dev]
 
+        callback_list = [AnSelCB(self.dev_labels, [char_emb_input, word_emb_input, poss_emb_input, chunks_emb_input], self.train_labels, [char_emb_input_dev, word_emb_input_dev, poss_emb_input_dev, chunks_emb_input_dev]),
+                            ModelCheckpoint('%s/model_improvement-{epoch:2d}.h5' % self.args.checkpoint_dir, monitor='f1', verbose=1, save_best_only=True, mode='max'),
+                            EarlyStopping(monitor='map', mode='max', patience=self.args.patience)]
+
         self.model.fit(
             [char_emb_input, word_emb_input, poss_emb_input, chunks_emb_input],
+            # [char_emb_input, word_emb_input],
             np.asarray(labels),
             epochs=self.args.epochs,
             batch_size=self.args.batch_size,
             validation_data=([char_emb_input_dev, word_emb_input_dev, poss_emb_input_dev, chunks_emb_input_dev], np.asarray(labels_dev)),
+            # validation_data=([char_emb_input_dev, word_emb_input_dev], np.asarray(labels_dev)),
+            callbacks=callback_list,
             verbose=1
         )
 

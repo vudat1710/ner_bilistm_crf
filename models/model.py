@@ -17,15 +17,15 @@ class ModelTraining:
 
     def model_build(self):
         model = Bidirectional(LSTM(units=self.word_hidden_dim, return_sequences=True))
-
+        self.emb_layer = Dropout(self.dropout)(self.emb_layer)
         lstm_after = model(self.emb_layer)
         lstm_after = Dropout(self.dropout)(lstm_after)
-        lstm_after = TimeDistributed(Dense(50, activation='relu'))(lstm_after)
+        # lstm_after = TimeDistributed(Dense(50, activation='relu'))(lstm_after)
         out = self.crf(lstm_after)
 
         training_model = Model(inputs=self.inputs, outputs=out, name="training_model")
         opt = Adam(self.lr)
 
-        training_model.compile(loss=self.crf.loss_function, optimizer=opt)
+        training_model.compile(loss=self.crf.loss_function, optimizer=opt, metrics=[self.crf.accuracy])
 
         return training_model

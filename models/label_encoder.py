@@ -29,3 +29,6 @@ class LabelEncoderModel:
         
         print("---------------------------------------------------")
         return [self.embedding_weights]
+    
+    def get_label_encoder(self):
+        return self.label_encoder

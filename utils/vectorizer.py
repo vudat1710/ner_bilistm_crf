@@ -30,5 +30,3 @@ class Vectorizer:
                             self.char_emb_input[sentence_index][word_index][char_index] = self.char_vocab['_OOV_']
         
         return [np.asarray(self.word_emb_input), np.asarray(self.char_emb_input)]
-                        
-                
